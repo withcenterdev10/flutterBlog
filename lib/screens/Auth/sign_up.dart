@@ -40,7 +40,7 @@ class _SignUpState extends State<SignUp> {
     bool isLoading = true;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: const Text('Sign Up')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
