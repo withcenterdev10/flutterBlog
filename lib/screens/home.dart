@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutterblognew/utils/consts.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -10,7 +11,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Home Screen')),
       body: Center(
         child: ElevatedButton(
-          onPressed: () => context.go('/details'),
+          onPressed: () => {context.go('/${Pages.signIn.name}')},
           child: const Text('Go to the Details screen'),
         ),
       ),
