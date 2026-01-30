@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutterblognew/providers/auth_provider.dart';
 import 'package:flutterblognew/widgets/loader.dart';
 
-class SignUp extends StatefulWidget {
+class SignUp extends ConsumerStatefulWidget {
   const SignUp({super.key});
 
   @override
-  State<SignUp> createState() => _SignUpState();
+  ConsumerState<SignUp> createState() => _SignUpState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignUpState extends ConsumerState<SignUp> {
   final _formKey = GlobalKey<FormState>();
 
   final _emailController = TextEditingController();
@@ -27,17 +29,43 @@ class _SignUpState extends State<SignUp> {
     super.dispose();
   }
 
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Sign up Successful')));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    bool isLoading = true;
+    bool isLoading = false;
+
+    void submit() async {
+      String message = "";
+
+      if (_formKey.currentState!.validate()) {
+        try {
+          final email = _emailController.text;
+          final password = _passwordController.text;
+          final firstname = _firstnameController.text;
+          final lastname = _emailController.text;
+          final displayName = '$firstname $lastname';
+
+          // validation
+
+          await ref
+              .watch(authProvider.notifier)
+              .signUp(
+                email: email,
+                password: password,
+                displayName: displayName,
+              );
+
+          message = "Welcome user";
+        } catch (error) {
+          message = "Sign up failed";
+        } finally {
+          if (context.mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
+          }
+        }
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Sign Up')),
@@ -157,7 +185,7 @@ class _SignUpState extends State<SignUp> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: isLoading ? () {} : _submit,
+                  onPressed: isLoading ? () {} : submit,
                   child: isLoading
                       ? Loader(message: 'Submitting ...')
                       : const Text('Login'),
