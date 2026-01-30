@@ -5,7 +5,24 @@ import 'package:flutterblognew/db/supabase.dart';
 class AuthNotifier extends Notifier<AuthData> {
   @override
   AuthData build() {
+    // AuthData.initial();
+    // getAuthUser();
+    // return state;
+
     return AuthData.initial();
+  }
+
+  Future<void> getAuthUser() async {
+    state = state.copyWith(loading: true);
+    try {
+      final res = await supabase.auth.getUser();
+      print(res);
+    } catch (error) {
+      print(error);
+      throw Exception("Failed to sign in");
+    } finally {
+      state = state.copyWith(loading: false);
+    }
   }
 
   Future<void> signInWithPassword({
