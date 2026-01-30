@@ -34,6 +34,17 @@ class AuthNotifier extends Notifier<AuthData> {
     }
   }
 
+  Future<void> logout() async {
+    state = state.copyWith(loading: true);
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      throw Exception("something went wront");
+    } finally {
+      state = state.copyWith(loading: false);
+    }
+  }
+
   Future<void> signUp({
     required String email,
     required String password,
