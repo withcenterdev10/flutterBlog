@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterblognew/providers/auth_provider.dart';
 import 'package:flutterblognew/widgets/loader.dart';
+import 'package:go_router/go_router.dart';
 
 class SignUp extends ConsumerStatefulWidget {
   const SignUp({super.key});
@@ -17,6 +18,7 @@ class _SignUpState extends ConsumerState<SignUp> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _displayNameController = TextEditingController();
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -42,7 +44,6 @@ class _SignUpState extends ConsumerState<SignUp> {
           final displayName = _displayNameController.text;
 
           // validation
-
           await ref
               .watch(authProvider.notifier)
               .signUp(
@@ -52,6 +53,10 @@ class _SignUpState extends ConsumerState<SignUp> {
               );
 
           message = "Welcome user";
+
+          if (context.mounted) {
+            context.go('/');
+          }
         } catch (error) {
           message = "Sign up failed";
         } finally {
@@ -116,23 +121,32 @@ class _SignUpState extends ConsumerState<SignUp> {
 
               const SizedBox(height: 16),
 
-              /// Password
               TextFormField(
                 controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
                   labelText: 'Password',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Password is required';
                   }
-
                   if (value.length < 6) {
                     return 'Password must be at least 6 characters';
                   }
-
                   return null;
                 },
               ),
