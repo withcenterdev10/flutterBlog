@@ -1,40 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutterblognew/providers/auth_provider.dart';
+import 'package:flutterblognew/widgets/loader.dart';
+import 'package:go_router/go_router.dart';
 
-class SignIn extends StatefulWidget {
+class SignIn extends ConsumerStatefulWidget {
   const SignIn({super.key});
 
   @override
-  State<SignIn> createState() => _SignInState();
+  ConsumerState<SignIn> createState() => _SignInState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignInState extends ConsumerState<SignIn> {
+  bool _obscurePassword = true;
   final _formKey = GlobalKey<FormState>();
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
-  }
-
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Login Successful 🎉')));
-
-      // debugPrint('Email: ${_emailController.text}');
-      // debugPrint('Password: ${_passwordController.text}');
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    void submit() async {
+      String message = "";
+
+      if (_formKey.currentState!.validate()) {
+        try {
+          final email = _emailController.text;
+          final password = _passwordController.text;
+
+          // add validation
+          await ref
+              .read(authProvider.notifier)
+              .signInWithPassword(email: email, password: password);
+
+          message = "Welcome user";
+
+          if (context.mounted) {
+            context.go('/');
+          }
+        } catch (error) {
+          message = "Sign up failed";
+        } finally {
+          if (context.mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
+          }
+        }
+      }
+    }
+
+    final authState = ref.watch(authProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Sign In')),
       body: Padding(
@@ -74,46 +97,35 @@ class _SignInState extends State<SignIn> {
               /// Password
               TextFormField(
                 controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
                   labelText: 'Password',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Password is required';
                   }
-
                   if (value.length < 6) {
                     return 'Password must be at least 6 characters';
                   }
-
                   return null;
                 },
               ),
 
               const SizedBox(height: 16),
-
-              /// Confirm Password
-              TextFormField(
-                controller: _confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Confirm Password',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
-                  }
-
-                  if (value != _passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-
-                  return null;
-                },
-              ),
 
               const SizedBox(height: 24),
 
@@ -121,8 +133,10 @@ class _SignInState extends State<SignIn> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _submit,
-                  child: const Text('Login'),
+                  onPressed: authState.loading ? () {} : submit,
+                  child: authState.loading
+                      ? Loader(message: 'Submitting ...')
+                      : const Text('Login'),
                 ),
               ),
             ],
