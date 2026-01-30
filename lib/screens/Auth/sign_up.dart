@@ -16,16 +16,15 @@ class _SignUpState extends ConsumerState<SignUp> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _firstnameController = TextEditingController();
-  final _lastnameController = TextEditingController();
+  final _displayNameController = TextEditingController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    _firstnameController.dispose();
-    _lastnameController.dispose();
+    _displayNameController.dispose();
+
     super.dispose();
   }
 
@@ -40,9 +39,7 @@ class _SignUpState extends ConsumerState<SignUp> {
         try {
           final email = _emailController.text;
           final password = _passwordController.text;
-          final firstname = _firstnameController.text;
-          final lastname = _emailController.text;
-          final displayName = '$firstname $lastname';
+          final displayName = _displayNameController.text;
 
           // validation
 
@@ -77,30 +74,14 @@ class _SignUpState extends ConsumerState<SignUp> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
-                controller: _firstnameController,
+                controller: _displayNameController,
                 decoration: const InputDecoration(
-                  labelText: 'Firstname',
+                  labelText: 'Name',
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Firstname is required';
-                  }
-
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _lastnameController,
-                decoration: const InputDecoration(
-                  labelText: 'Lastname',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Lastname is required';
+                    return 'Name is required';
                   }
 
                   return null;
@@ -150,29 +131,6 @@ class _SignUpState extends ConsumerState<SignUp> {
 
                   if (value.length < 6) {
                     return 'Password must be at least 6 characters';
-                  }
-
-                  return null;
-                },
-              ),
-
-              const SizedBox(height: 16),
-
-              /// Confirm Password
-              TextFormField(
-                controller: _confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Confirm Password',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
-                  }
-
-                  if (value != _passwordController.text) {
-                    return 'Passwords do not match';
                   }
 
                   return null;
