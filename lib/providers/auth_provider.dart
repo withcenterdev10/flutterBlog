@@ -32,6 +32,7 @@ class AuthNotifier extends Notifier<AuthData> {
     required String displayName,
   }) async {
     try {
+      state = state.copyWith(loading: true);
       final res = await supabase.auth.signUp(password: password, email: email);
 
       state = state.copyWith(
@@ -42,6 +43,8 @@ class AuthNotifier extends Notifier<AuthData> {
     } catch (error) {
       print(error);
       throw Exception("Failed to sign up");
+    } finally {
+      state = state.copyWith(loading: false);
     }
   }
 }

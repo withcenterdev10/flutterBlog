@@ -31,7 +31,7 @@ class _SignUpState extends ConsumerState<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    bool isLoading = false;
+    final authState = ref.watch(authProvider);
 
     void submit() async {
       String message = "";
@@ -185,8 +185,8 @@ class _SignUpState extends ConsumerState<SignUp> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: isLoading ? () {} : submit,
-                  child: isLoading
+                  onPressed: authState.loading ? () {} : submit,
+                  child: authState.loading
                       ? Loader(message: 'Submitting ...')
                       : const Text('Login'),
                 ),
