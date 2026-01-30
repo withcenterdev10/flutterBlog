@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterblognew/providers/auth_provider.dart';
+import 'package:flutterblognew/utils/consts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutterblognew/providers/auth_provider.dart';
 
@@ -35,6 +36,10 @@ class _BlogDrawerState extends ConsumerState<BlogDrawer> {
       }
     }
 
+    void navigateToProfile() async {
+      context.go('/${Pages.profile.name}');
+    }
+
     return Drawer(
       child: Column(
         children: [
@@ -51,6 +56,7 @@ class _BlogDrawerState extends ConsumerState<BlogDrawer> {
               ],
             ),
           ),
+          ListTile(title: Text('Profile'), onTap: navigateToProfile),
           const Spacer(),
           ListTile(title: Text('Logout'), onTap: handleLogout),
           // many more...

@@ -1,1 +1,1 @@
-enum Pages { signIn, signUp }
+enum Pages { signIn, signUp, profile }

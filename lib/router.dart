@@ -3,6 +3,7 @@ import 'package:flutterblognew/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterblognew/screens/Auth/sign_in.dart';
 import 'package:flutterblognew/screens/Auth/sign_up.dart';
+import 'package:flutterblognew/screens/my_profile.dart';
 import 'package:flutterblognew/utils/consts.dart';
 
 final GoRouter router = GoRouter(
@@ -23,6 +24,12 @@ final GoRouter router = GoRouter(
           path: Pages.signUp.name,
           builder: (BuildContext context, GoRouterState state) {
             return const SignUp();
+          },
+        ),
+        GoRoute(
+          path: Pages.profile.name,
+          builder: (BuildContext context, GoRouterState state) {
+            return const MyProfile();
           },
         ),
       ],
